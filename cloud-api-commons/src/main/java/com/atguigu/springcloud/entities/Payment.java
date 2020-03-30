@@ -1,6 +1,8 @@
-package com.atguigu.springcloud.entitys;
+package com.atguigu.springcloud.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,6 +13,8 @@ import java.io.Serializable;
  * @Version v1.0.0
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Payment implements Serializable {
 
     private Long id;

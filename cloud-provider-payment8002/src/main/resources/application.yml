@@ -1,5 +1,5 @@
 server:
-  port: 8001
+  port: 8002
 
 spring:
   application:
@@ -20,15 +20,13 @@ eureka:
     fetch-registry: true
     # 入住地址
     service-url:
-#      defaultZone: http://localhost:7001/eureka/ #单机版
+      #      defaultZone: http://localhost:7001/eureka/ #单机版
       defaultZone: http://eureka7001.com:7001/eureka/, http://eureka7002.com:7002/eureka/ # 集群版本
   #修改Eureka注册中心的服务名称
   instance:
-    instance-id: payment8001
+    instance-id: payment8002
     # 点击名称会显示IP地址
     prefer-ip-address: true
-#    lease-renewal-interval-in-seconds: 1 # eureka客户端向服务端发送心跳的时间间隔 单位秒 默认30
-#    lease-expiration-duration-in-seconds: 2 # eureka服务端收到最后一次心跳后等待的时间上线，单位为妙（默认90秒），超时被剔除
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
