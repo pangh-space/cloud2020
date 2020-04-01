@@ -60,3 +60,17 @@
 4. 使用命令 curl -X POST http://localhost:3344/actuator/bus-refresh ，同时所有客户端，更新配置
 5. 使用命令curl -X POST http://localhost:3344/actuator/bus-refresh/**config-client:3355**，通知部分客户端，更新配置
    - 备注：加粗部分为微服务在 Eureka的名称+端口号
+
+
+
+#####  六、SpringCloudStream-消息驱动
+
+######  Stream主要屏蔽了各个消息中间件的差异，统一了消息的编程模型。
+
+1. 创建cloud-stream-rabbitmq-provider8801 消息的生产者，用于生产消息到RabbitMQ 服务器
+2. 创建cloud-stream-rabbitmq-consumer8802 消息的消费者，用于测试8801生产的消息
+3. 创建cloud-stream-rabbitmq-consumer8803 消息的消费者，主要是为了模拟重复消费问题。
+   - 如果8802和8803 不在同一个分组，那么就会产生消息的重复消费问题
+   - 可以使用 bindings-input-group 标签，定义当前服务的分组名称，如果在同一个组就不会出现重复消费的问题
+   - 如果8802 去掉分组名称，8803 不去掉分组名称。那么两台微服务都停掉，然后8801发送消息。这时候重启8802，那么8802 将不会消费到已经错过的消息。但是重启8803就会消费到刚刚丢失的消息。这样就证明了消息服务器默认会持久化消息
+
