@@ -4,6 +4,13 @@ server:
 spring:
   application:
     name: cloud-payment-service #在EurekaServer 服务中的名称
+  zipkin:
+    # zipkin 地址
+    base-url: http://localhost:9411
+    sleuth:
+      sampler:
+        #采样率值介于0到1之间，1表示全部采样
+        probability: 1
 
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource  #当前数据源操作类型
@@ -20,8 +27,8 @@ eureka:
     fetch-registry: true
     # 入住地址
     service-url:
-#      defaultZone: http://localhost:7001/eureka/ #单机版
-      defaultZone: http://eureka7001.com:7001/eureka/, http://eureka7002.com:7002/eureka/ # 集群版本
+      defaultZone: http://localhost:7001/eureka/ #单机版
+#      defaultZone: http://eureka7001.com:7001/eureka/, http://eureka7002.com:7002/eureka/ # 集群版本
   #修改Eureka注册中心的服务名称
   instance:
     instance-id: payment8001

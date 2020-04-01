@@ -74,3 +74,13 @@
    - 可以使用 bindings-input-group 标签，定义当前服务的分组名称，如果在同一个组就不会出现重复消费的问题
    - 如果8802 去掉分组名称，8803 不去掉分组名称。那么两台微服务都停掉，然后8801发送消息。这时候重启8802，那么8802 将不会消费到已经错过的消息。但是重启8803就会消费到刚刚丢失的消息。这样就证明了消息服务器默认会持久化消息
 
+
+
+#####  七、SpringCloud Sleuth 分布式请求链路跟踪和zipkin
+
+######  首先需要下载zipkin jar包，下载地址：[zipkin.jar](https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/2.12.9/) ,下载完成以后，可以使用 java -jar ***.jar 启动服务。然后可以键入 localhost:9411/zipkin 访问查看平台
+
+1. 在cloud-provider-payment8001 中添加spring-cloud-starter-zipkin GAV坐标，然后在yml 配置文件中配置相关信息，Controller中添加测试 zipkin 的方法
+2. 在cloud-consumer-order80 中添加同样的配置，Controller中也添加请求方法。在方法中注意，不能使用restTemplate 通过Eureka 中的微服务名称调用。因为在这个Controller中也做了自定义个负载均衡策略配置。所以，如果要请求的话，要么写死路径，要么使用自定义负载均衡策略请求。否则会报错，找不到微服务名称。
+3. 最后在浏览器的web界面就可以看到响应的链路调用情况
+
