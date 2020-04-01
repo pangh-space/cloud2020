@@ -40,3 +40,23 @@
      - 创建一个MyFilter类，实现GlobalFilter 和 Ordered 接口
      - 方法filter 中实现具体的业务控制
      - 方法getOrder是过滤器加载的顺序，数字越小，优先级越高
+
+#####  五、SpringCloud配置中心及消息总线
+
+######  1. 配置中心
+
+1. 创建cloud-config-center3344服务，用于获取GitHub 仓库的配置文件信息。作为配置中心的leader存在
+2. 创建cloud-config-client3355服务，当做配置中心的client 存在。
+   - 3355 配置文件需要创建bootstrap.yml ，加载优先级要比appliation.yml配置文件高
+   - GitHub仓库修改了配置文件以后，3344可以实时的读取到配置文件的修改。但是3344读不到
+   - 在3355 yml 配置文件中需要增加暴露监控端点配置，Controller中需要增加@RefreshScope注解
+   - 运维修改以后，需要手动通知3355 更新配置文件，使用命令：crul -X POST “http://localhost:3355/actuator/refresh"
+
+######  2. 消息总线
+
+1. 创建cloud-config-client3366服务，同时修改3344、3355、3366，pom 中添加消息总线GAV。yml 中添加连接RabbitMQ服务器用户名密码
+2. 3344 要开启Bus刷新配置断点
+3. 3355和 3366 要暴露监控端点
+4. 使用命令 curl -X POST http://localhost:3344/actuator/bus-refresh ，同时所有客户端，更新配置
+5. 使用命令curl -X POST http://localhost:3344/actuator/bus-refresh/**config-client:3355**，通知部分客户端，更新配置
+   - 备注：加粗部分为微服务在 Eureka的名称+端口号
