@@ -61,8 +61,6 @@
 5. 使用命令curl -X POST http://localhost:3344/actuator/bus-refresh/**config-client:3355**，通知部分客户端，更新配置
    - 备注：加粗部分为微服务在 Eureka的名称+端口号
 
-
-
 #####  六、SpringCloudStream-消息驱动
 
 ######  Stream主要屏蔽了各个消息中间件的差异，统一了消息的编程模型。
@@ -74,8 +72,6 @@
    - 可以使用 bindings-input-group 标签，定义当前服务的分组名称，如果在同一个组就不会出现重复消费的问题
    - 如果8802 去掉分组名称，8803 不去掉分组名称。那么两台微服务都停掉，然后8801发送消息。这时候重启8802，那么8802 将不会消费到已经错过的消息。但是重启8803就会消费到刚刚丢失的消息。这样就证明了消息服务器默认会持久化消息
 
-
-
 #####  七、SpringCloud Sleuth 分布式请求链路跟踪和zipkin
 
 ######  首先需要下载zipkin jar包，下载地址：[zipkin.jar](https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/2.12.9/) ,下载完成以后，可以使用 java -jar ***.jar 启动服务。然后可以键入 localhost:9411/zipkin 访问查看平台
@@ -83,4 +79,23 @@
 1. 在cloud-provider-payment8001 中添加spring-cloud-starter-zipkin GAV坐标，然后在yml 配置文件中配置相关信息，Controller中添加测试 zipkin 的方法
 2. 在cloud-consumer-order80 中添加同样的配置，Controller中也添加请求方法。在方法中注意，不能使用restTemplate 通过Eureka 中的微服务名称调用。因为在这个Controller中也做了自定义个负载均衡策略配置。所以，如果要请求的话，要么写死路径，要么使用自定义负载均衡策略请求。否则会报错，找不到微服务名称。
 3. 最后在浏览器的web界面就可以看到响应的链路调用情况
+
+#####   八、SpringCloud Alibaba Nacos服务注册和配置中心
+
+######  Nacos 可以替代Eureka作为服务的注册中心，并且使用起来要比Eureka方便，不用我们自己单独创建项目启动。Nacos 支持 CP和AP切换配置，从服务的角度，更优于其他的注册中心。
+
+1. 首先从[Nacos官网](https://nacos.io/zh-cn/index.html) 下载安装包，然后安装到Linux 服务器
+2. 只有使用命令 ./startup.sh 命令启动Nacos，我们会看到管理界面。默认用户名和密码为 ：nacos/nacos
+3. 之后创建项目cloudalibaba-provider-payment9001 服务提供者和 9002 服务提供者，配置相关信息，会在Nacos 管理界面看到我们注册到Nacos的两个集群实例
+4. 然后创建cloudalibaba-consumer-nacos-order83 服务消费者，通过Nacos 注册中心，调用 9001和9002。可以配置Rabbion ，Nacos 默认对接了Rabbion的负载均衡机制
+5. Nacos 配置中心，创建cloudalibaba-config-nacos-client3377。添加配置文件bootstrap.yml 和 application.yml 配置Nacos 配置中心的文件名称，通过代码读取到配置中心，配置文件的内容。
+   1. 配置中心可以使用Data Id作为分组过滤的条件
+   2. 可以使用Group作为分组过滤的条件，可以配置生产环境、测试环境和开发环境，不同的配置文件
+   3. 可以使用命名空间区分各个环境的配置文件
+6. Nacos 持久化配置，Nacos 默认集成了Apache 的derby数据库，如果需要做Nacos 高可用集群，就需要把数据库改为连接MySQL ，当前Nacos 值支持 MySQL 数据库。所以，需要在 nacos的配置文件中，添加MySQL 的连接信息。官网都有介绍
+7. Nacos 集群，就需要借助Nginx 做代理，只有所有对 Nacos 的访问，都会通过Nginx 代理转发。所以需要配置Nginx
+8. Nacos 本身，也需要在配置文件中配置各个集群环境的IP
+9. 配置完成以后，启动三台Nacos 集群，启动Nginx，然后通过 9002 访问配置文件，测试成功...
+
+
 
