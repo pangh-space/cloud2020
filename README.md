@@ -97,5 +97,14 @@
 8. Nacos 本身，也需要在配置文件中配置各个集群环境的IP
 9. 配置完成以后，启动三台Nacos 集群，启动Nginx，然后通过 9002 访问配置文件，测试成功...
 
+#####  九、SpringCloud Alibaba Sentinel 实现服务熔断与限流
+
+1. cloudalibaba-sentinel-service8401服务，主要是为了演示Sentinel 的流控规则、流控效果、降级规则、热点规则、以及系统规则，还有Sentinel 的配置持久化到Nacos相关配置
+2. cloudalibaba-provider-payment9003和9004 创建了服务的提供则，注册到Nacos 中
+3. cloudalibaba-consumer-nacos-order84 通过Rabbion 负载均衡消费9003和9004 的服务
+   - 项目中配置了fallback和blockHandler ，通过实验证明这两种异常是可以同时存在的
+   - 配置了通过Rabbion负载均衡调用服务提供者的方式
+   - 配置了通过OpenFeign 接口的方式调用服务提供者，以及服务熔断的处理方式
+
 
 
